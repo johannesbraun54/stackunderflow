@@ -6,7 +6,6 @@ class AnswerSerializer(serializers.ModelSerializer):
         model = Answer
         fields = ['id', 'content', 'author', 'created_at', 'question']
         
-    question = serializers.PrimaryKeyRelatedField(queryset=Question.objects.all())
 
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:
