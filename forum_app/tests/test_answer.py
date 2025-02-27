@@ -44,7 +44,7 @@ class AnswerTests(APITestCase):
             "author": self.user.id,
             "question": self.question.id,
         }
-        print(self.answer.author)
+
         url = reverse('answer-detail', kwargs={'pk': self.answer.id})
         expected_content = 'Das ist ein Test!'
         self.answer.content = 'Das ist ein Test!'

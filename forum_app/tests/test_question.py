@@ -12,25 +12,18 @@ class LikeTests(APITestCase):
             url = reverse('like-list')
             response = self.client.get(url)
             self.assertEqual(response.status_code, status.HTTP_200_OK)
-            
-class AnswerTest(APITestCase):
-    
-    def test_create_answer(self):
-        url = reverse('answer-list-create')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 class QuestionTests(APITestCase):
     
     def setUp(self):
-        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        self.user = User.objects.create_user(username='testuser', is_staff=True, password='testpassword',)
         self.question = Question.objects.create(title='Test Question', content='Test Content', author=self.user, category='frontend')
         # self.client = APIClient()
         # self.client.login(username='testuser', password='testpassword')
-        
         self.token = Token.objects.create(user=self.user)
         self.client = APIClient()
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
+     
      
     def test_list_post_question(self):
         url = reverse('question-list')
@@ -52,3 +45,8 @@ class QuestionTests(APITestCase):
         self.assertDictEqual(response.data, expected_data)
         self.assertJSONEqual(response.content, expected_data)
         self.assertContains(response, 'title')
+        
+    def test_delete_question(self):
+        url = reverse('question-detail', kwargs={'pk':self.question.id})
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
