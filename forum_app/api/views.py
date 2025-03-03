@@ -2,14 +2,29 @@ from rest_framework import viewsets, generics, permissions
 from forum_app.models import Like, Question, Answer
 from .serializers import QuestionSerializer, AnswerSerializer, LikeSerializer
 from .permissions import IsOwnerOrAdmin, CustomQuestionPermission
+from .throttling import QuestionThrottle, QuestionGetThrottle, QuestionPostThrottle
+from rest_framework.throttling import ScopedRateThrottle, UserRateThrottle
+
+
 
 class QuestionViewSet(viewsets.ModelViewSet):
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
-    # permission_classes = [CustomQuestionPermission]
+    permission_classes = [CustomQuestionPermission]
+    throttle_classes = [UserRateThrottle]
+    throttle_scope = 'question-scope'
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+        
+    # def get_throttles(self):
+    #     if self.action == 'list' or self.action == 'retrieve':
+    #         return [QuestionGetThrottle()] 
+        
+    #     if self.action == 'create':
+    #         return [QuestionPostThrottle()] 
+        
+    #     return []
 
 class AnswerListCreateView(generics.ListCreateAPIView):
     queryset = Answer.objects.all()
